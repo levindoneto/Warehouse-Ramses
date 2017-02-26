@@ -1,0 +1,42 @@
+ORG 128
+;declaracao_variaveis:
+	endereco: DB    	  ;      , Endereco do primeiro byte
+	conjunto: DAB [8]	  ;	                   - 130
+		
+;--------------------------------------------------------------------------------------------------
+
+ORG 0
+inicio_programa:
+	LDR A, #0		  ; 	  Zerando variaveis
+	STR A conjunto
+	STR A conjunto+1
+	STR A conjunto+2
+	STR A conjunto+3
+	STR A conjunto+4
+	STR A conjunto+5
+	STR A conjunto+6
+	STR A conjunto+7
+   var: NOP
+	JSR loop
+	HLT
+	loop: 
+		NOP
+	 start: LDR A endereco, I  ;	 - Acessa o valor que tem no endereco especificado pelo modo imediato.
+		JN loop, I	   ;	 - Retorna o endereço que tinha na função depois de chamá-la.
+		SHR A		   ;	 - Já que o numero não é negativo, então está no formato 0CCCNNNN, 
+		SHR A		   ;	   e fazendo 4 rotações a direita eu fico só com o 0CCC, que é
+		SHR A		   ;	   uma das coisas que eu preciso na resolução.
+		SHR A
+		STR A var      	   ;	 - var recebe o code (CCC).
+		
+		LDR A, endereco, I ; 	 - Quantidade fica no reg A.
+         	AND A, #15	   ;	 - Com o AND 00001111 eu consigo deixar o FCCCNNNN em 0000NNNN, obtendo a quantidade. 
+		LDR X, var	
+	 	ADD A, conjunto, X ;	 - De agora até o laço, o programa vai percorrendo os conjuntos e salvando os valores nos  	 
+		STR A, conjunto, X ;	   endereços solicitados. 	 
+		LDR A, endereco
+		ADD A, #1
+		STR A endereco
+		JMP start	   ;	 - Volta para o inicio do laço.
+
+;--------------------------------------------------------------------------------------------------
